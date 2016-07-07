@@ -75,6 +75,7 @@
 				showTitle: true,
 				showCaption: true,
 				showSequenceInfo: true,
+				audioPlayer: false,
 				inline: {
 					width: 'auto',
 					height: 'auto'
@@ -146,9 +147,14 @@
 						_self.objects.pause = $('<a href="#" class="' + _self.settings.classPrefix + 'icon-pause"><span>' + _self.settings.labels['navigator.pause'] + '</span></a>').hide()
 					);
 					_self.objects.case.append(
-						_self.objects.content = $('<div id="' + _self.settings.idPrefix + 'content"></div>'),
-						_self.objects.info = $('<div id="' + _self.settings.idPrefix + 'info"></div>')
+						_self.objects.info = $('<div id="' + _self.settings.idPrefix + 'info"></div>'),
+						_self.objects.content = $('<div id="' + _self.settings.idPrefix + 'content"></div>')
 					);
+					if(_self.settings.audioPlayer.audioPlayer){
+						_self.objects.case.append(
+							_self.objects.audio = $('<audio src="" controls autoplay loop/>')
+						);
+					};
 					_self.objects.content.append(
 						_self.objects.contentInner = $('<div class="' + _self.settings.classPrefix + 'contentInner"></div>')
 					);
@@ -207,7 +213,8 @@
 		_setObjectData: function (object) {
 		 	var $object = $(object),
 				objectData = {
-				title: _self.settings.title || $object.attr(_self._prefixAttributeName('title')) || $object.attr('title'),
+				title: _self.settings.title || $object.attr(_self._prefixAttributeName('data-title')) || $object.attr('data-title'),
+				audioSrc: $object.attr('audio-src'),
 				caption: _self.settings.caption || $object.attr(_self._prefixAttributeName('caption')) || $object.children('img').attr('alt'),
 				url: _self._determineUrl(),
 				requestType: _self.settings.ajax.type,
@@ -403,6 +410,9 @@
 						'src': _self.objectData.url,
 						'alt': _self.objectData.title
 					});
+					if(_self.settings.audioPlayer.audioPlayer){
+						_self.objects.audio.attr('src', _self.objectData.audioSrc);
+					};
 					break;
 				case 'inline':
 					$object = $('<div class="' + _self.settings.classPrefix + 'inlineWrap"></div>');
@@ -672,6 +682,12 @@
 				'max-width': dimensions.maxWidth,
 				'max-height': dimensions.maxHeight
 			});
+
+			if(_self.settings.audioPlayer.audioPlayer){
+				_self.objects.audio.css({
+					'width': $object.outerWidth()
+				});
+			};
 
 			_self.objects.contentInner.css({
 				'width': $object.outerWidth(),
